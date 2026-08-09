@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+DEST=${DEST:-$HOME}
+
+FILES=(
+    .bash_aliases
+    .bash_profile
+    .bash_prompt
+    .bashrc
+    .profile
+)
+
+for f in "${FILES[@]}"; do
+    if ! [ -f "$f" ]; then
+        echo "no $f file found"
+        exit 1
+    fi
+done
+
+if CONFS=( .config/* ) && [ "${CONFS[*]}" = '.config/*' ]; then
+    echo 'no .config/* files found'
+    exit 1
+fi
+
+if BINS=( .local/bin/* ) && [ "${BINS[*]}" = './local/bin/*' ]; then
+    echo 'no .local/bin/* files found'
+    exit 1
+fi
+
+if ! [ -f ./install ] || ! cmp -s "$0" ./install; then
+    echo "must execute $0 in repo directory!"
+    exit 1
+fi
+
+mkdir -vp "${DEST}/.config" "${DEST}/.local/bin"
+
+ln -vbsr "${FILES[@]}" "${DEST}"
+ln -vbsr "${CONFS[@]}" "${DEST}/.config"
+ln -vbsr "${BINS[@]}" "${DEST}/.local/bin"

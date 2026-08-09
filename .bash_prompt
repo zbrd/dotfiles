@@ -1,0 +1,25 @@
+# vim: ft=sh
+# shellcheck shell=bash
+
+COLOR_RED="\[$(tput setaf 1)\]"
+COLOR_GREEN="\[$(tput setaf 2)\]"
+COLOR_BLUE="\[$(tput setaf 4)\]"
+COLOR_RESET="\[$(tput sgr0)\]"
+
+PROMPT_DIRTRIM=4
+
+ps=(
+    "${COLOR_GREEN}\u@\h${COLOR_RESET} "
+    "${COLOR_BLUE}\w${COLOR_RESET} "
+    "${COLOR_RED}\$(print_nice_exitcode)${COLOR_RESET}"
+    "\n\$ "
+)
+
+PS1="$(printf '%s' "${ps[@]}")"
+
+print_nice_exitcode() {
+    local e=$?
+    if (( "$e" )); then
+        echo "$e "
+    fi
+}

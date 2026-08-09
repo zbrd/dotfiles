@@ -1,0 +1,22 @@
+// -*- mode: jsonc -*-
+{
+    "position": "bottom",
+    "height": 10,
+    "on-sigusr1": "reload",
+    "modules-right": ["battery"],
+    "reload_style_on_change": true,
+
+    "battery": {
+        "format": "",
+        "states": {
+            "warning": 40,
+            "critical": 20
+        },
+        "events": {
+            "on-discharging-warning": "notify-send 'Low Battery'",
+            "on-discharging-critical": "notify-send -u critical 'Low Battery'",
+            "on-charging": "notify-send 'Power Switch' Charging",
+            "on-discharging": "notify-send 'Power Switch' Discharging"
+        }
+    }
+}

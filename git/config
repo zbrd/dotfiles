@@ -1,0 +1,11 @@
+[init]
+    defaultBranch = main
+
+[user]
+    useConfigOnly = true
+
+[includeIf "gitdir:~/Repos/241m/"]
+    path = ~/.config/git/241m.ini
+
+[includeIf "gitdir:~/Repos/zbrd/"]
+    path = ~/.config/git/zbrd.ini

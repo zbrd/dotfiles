@@ -1,0 +1,25 @@
+{
+  "plugins": {
+    "kanagawa": {
+      "rev": "bb85e4bfc8d89b0e62c8fa53ccdd13d12e2f77b3",
+      "src": "https://github.com/rebelot/kanagawa.nvim"
+    },
+    "nvim-lspconfig": {
+      "rev": "1c0d8f70dbc8827263eedc3cf7021ceba0f68689",
+      "src": "https://github.com/neovim/nvim-lspconfig"
+    },
+    "nvim-surround": {
+      "rev": "8b47db616ef658b8fc27e61db2896aa2f40134de",
+      "src": "https://github.com/kylechui/nvim-surround"
+    },
+    "plenary": {
+      "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
+      "src": "https://github.com/nvim-lua/plenary.nvim"
+    },
+    "telescope": {
+      "rev": "5255aa27c422de944791318024167ad5d40aad20",
+      "src": "https://github.com/nvim-telescope/telescope.nvim",
+      "version": "'v0.2.2'"
+    }
+  }
+}

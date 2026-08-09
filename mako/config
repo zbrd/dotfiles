@@ -1,0 +1,31 @@
+actions=1
+border-radius=8
+border-size=1
+default-timeout=30000
+font=IosevkaExtended 14
+height=128
+icon-path=/usr/share/icons/Adwaita:/usr/share/icons/hicolor
+margin=16
+max-icon-size=32
+max-visible=7
+outer-margin=16
+padding=16
+width=480
+
+background-color=#C8C093FF
+text-color=#16161DFF
+border-color=#DCD7BAFF
+
+[urgency=low]
+background-color=#C0A36EFF
+text-color=#16161DFF
+border-color=#E6C384FF
+
+[urgency=critical]
+background-color=#E82424FF
+text-color=#DCD7BAFF
+border-color=#C34043FF
+
+[actionable=true]
+format=<b>%s</b>\n%b<small>\n\n<b>PRESS ⌘-ALT-SPACE FOR ACTIONS</b></small>
+default-timeout=0

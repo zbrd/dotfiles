@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+if monitor=$(niri msg -j outputs | fx keys list | head -n1); then
+    if image=$(wpaperctl get "$monitor"); then
+        set -- -i "$image" "$@"
+    fi
+fi
+
+exec swaylock -f "$@"

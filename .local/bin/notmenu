@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+exec fuzzel -d -p 'ACT> ' -a top-right \
+    --x-margin=528 --y-margin=32 -w 30 \
+    --mesg='Select a notification action'

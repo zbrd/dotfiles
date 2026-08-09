@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+
+MAIN_SESSION_NAME=${MAIN_SESSION_NAME:-main}
+
+term() {
+    exec foot -a "foot-$MAIN_SESSION_NAME" "$@"
+}
+
+main() {
+    pid=$(tmux lsc \
+          -f "#{==:#{session_name},$MAIN_SESSION_NAME}" \
+          -F '#{client_pid}')
+
+    if [ "$pid" ]; then
+        # session is attached to an existing foot window
+
+        # get foot's pid
+        tid=$(ps --no-headers -p "$pid" -o ppid)
+
+        if [ "$tid" ]; then
+            # find niri window id
+            wid=$(niri msg -j windows \
+                  | fx "?.pid=='$tid'" @.id list \
+                  | head -n1)
+
+            if [ "$wid" ]; then
+                # switch to the window
+                niri msg action focus-window --id "$wid"
+                exit
+            fi
+        fi
+
+        echo "Can't find terminal window"
+        exit 1
+    fi
+
+    if tmux has-session -t "=$MAIN_SESSION_NAME"; then
+        # session is detached, open foot and attach it
+        term tmux attach -t "=$MAIN_SESSION_NAME"
+    else
+        # open new session
+        term tmux new-session -s "$MAIN_SESSION_NAME"
+    fi
+}
+
+main "$@"

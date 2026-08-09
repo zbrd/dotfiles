@@ -30,7 +30,3 @@ if [ -z "$KMS_START_SCRIPT" ]; then
     # try to start wayland
     exec_prog niri-session -l
 fi
-
-# we're in a kmscon virtual console
-# start tmux session per vt
-exec tmux -As "vt${XDG_VTNR}"

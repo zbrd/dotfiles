@@ -6,7 +6,5 @@
 # to sleep.
 
 exec swayidle -w \
-     timeout 300 'swaylock -f -c 000000' \
-     timeout 330 'swaymsg "output * power off"' \
-     resume 'swaymsg "output * power on"' \
+     timeout 300  ~/.local/bin/lockscreen \
      before-sleep ~/.local/bin/lockscreen

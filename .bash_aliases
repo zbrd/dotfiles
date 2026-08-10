@@ -22,6 +22,7 @@ alias vim=nvim
 
 alias ga='git add'
 alias gc='git commit'
+alias gd='git diff'
 alias gl='git log'
 alias gs='git status'
 
@@ -42,4 +43,9 @@ pacs() {
 
 man() {
     LESS='-J' MANWIDTH=$(( COLUMNS-2 )) command man --nj --nh "$@"
+}
+
+al() {
+    vim ~/.bash_aliases
+    . ~/.bash_aliases
 }

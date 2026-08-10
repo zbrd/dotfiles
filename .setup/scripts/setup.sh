@@ -110,7 +110,8 @@ echo "Set $NAME password"
 passwd "$NAME"
 
 # add boot
-# XXX: get root partition UUID
+eval "$(lsblk -Po UUID /dev/sda2)"
+: "${UUID:?Cannot find UUID of /dev/sda2}"
 flags='rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2'
 flags+=",subvol=/@"
 loader=/EFI/arch/vmlinuz-linux-zen

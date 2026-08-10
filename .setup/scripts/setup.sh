@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+
+# Should be run inside arch-chroot
+
+set -e
+
+if [[ "$EUID" != 0 ]]; then
+    echo 'Must run as root'
+    exit 1
+fi
+
+NAME=${1:-zb}
+HOST=${2:-zbr}
+
+# Time
+ln -vsf /usr/share/zoneinfo/Asia/Kuala_Lumpur /etc/localtime
+hwclock -v --systohc
+systemctl enable systemd-timesyncd.service
+
+# Localization
+cat > /etc/locale.gen <<EOF
+# A list of supported locales is given in /usr/share/i18n/SUPPORTED
+en_GB.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
+EOF
+
+# Hostname and terminal configs
+echo "$HOST" > /etc/hostname
+echo "127.0.1.1 $HOST" >> /etc/hosts
+echo 'FONT=term-128b' > /etc/vconsole.conf
+
+# systemd-resolved
+# https://wiki.archlinux.org/title/Systemd-resolved
+mkdir -vp /etc/systemd/resolved.conf.d
+dns=(
+    '9.9.9.9#dns.quad9.net'
+    '149.112.112.112#dns.quad9.net'
+    '2620:fe::fe#dns.quad9.net'
+    '2620:fe::9#dns.quad9.net'
+)
+cat > /etc/systemd/resolved.conf.d/dns_over_tls.conf <<EOF
+# added by zb arch install scripts
+# https://wiki.archlinux.org/title/Systemd-resolved#Global_DNS_over_TLS
+[Resolve]
+DNS=${dns[@]}
+DNSOverTLS=true
+Domains=~.
+EOF
+systemctl enable systemd-resolved.service
+
+# iwd
+# https://wiki.archlinux.org/title/Iwd
+mkdir -vp /etc/iwd
+cat > /etc/iwd/main.conf <<EOF
+# added by zb arch install scripts
+# https://wiki.archlinux.org/title/Iwd#Enable_built-in_network_configuration
+[General]
+EnableNetworkConfiguration=true
+
+[Network]
+EnableIPv6=true
+NameResolvingService=systemd
+EOF
+systemctl enable iwd.service
+
+# keyd
+# https://github.com/rvaiya/keyd
+systemctl enable keyd.service
+
+# KMSCON
+# https://wiki.archlinux.org/title/KMSCON
+mkdir -vp /etc/kmscon
+cat > /etc/kmscon/kmscon.conf <<EOF
+# added by zb arch install scripts
+font-size=20
+font-name=Iosevka Extended
+login=/usr/bin/login -p -f $NAME
+EOF
+systemctl disable getty@.service
+systemctl enable kmsconvt@.service
+
+# TLP
+# https://wiki.archlinux.org/title/TLP
+systemctl enable tlp.service
+systemctl mask systemd-rfkill.service
+systemctl mask systemd-rfkill.socket
+
+# reflector
+systemctl enable reflector.service
+
+# Move scripts
+mkdir -vp /etc/profile.d /etc/initcpio/post /etc/pacman.d/hooks
+mv -v "$(dirname "$0")/userdefaults.sh" /etc/profile.d/
+mv -v "$(dirname "$0")/efi.sh" /etc/initcpio/post/
+mv -v "$(dirname "$0")/snapshot.sh" /usr/bin/snapshot-root
+mv -v "$(dirname "$0")/snapshot.hook" /etc/pacman.d/hooks/99-snapshots.hook
+chmod 755 /etc/initcpio/post/efi.sh
+chmod 755 /usr/bin/snapshot-root
+
+# regenerate initramfs (and copy to EFI)
+mkinicpio -P
+
+# users and groups
+groupadd data
+chown -vR :data /data
+useradd -mG wheel,data "$NAME"
+echo 'Set root password'
+passwd
+echo "Set $NAME password"
+passwd "$NAME"
+
+# add boot
+# XXX: get root partition UUID
+flags='rw,relatime,compress=zstd:3,ssd,discard=async,space_cache=v2'
+flags+=",subvol=/@"
+loader=/EFI/arch/vmlinuz-linux-zen
+init=/EFI/arch/initramfs-linux-zen.img
+boot='quiet loglevel=3 systemd.show_status=auto rd.udev.log_level=3'
+efibootmgr \
+    --create \
+    --unicode \
+    --label 'Arch Linux' \
+    --loader "$loader" \
+    "root=UUID=$UUID rootflags=$flags initrd=${init} ${boot}"
+
+# create 'init' snapshot
+mount -vm /dev/sda2 /mnt/broot
+btrfs -v subvolume snapshot -r /mnt/broot/@ /mnt/snapshots/root_init
+btrfs -v subvolume snapshot -r /mnt/broot/@home /mnt/snapshots/home_init
+umount -v /mnt/broot
+
+echo
+echo 'Done. Manually unmount /mnt and reboot!'

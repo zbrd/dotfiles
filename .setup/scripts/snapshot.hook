@@ -1,0 +1,15 @@
+# Added by zb arch install script
+# This hook creates a snapshot of root
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Creating BTRFS Snapshots...
+Exec = /usr/bin/snapshot-root
+When = PostTransaction
+Depends = btrfs-progs util-linux

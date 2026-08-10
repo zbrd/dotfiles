@@ -7,6 +7,7 @@ alias df.='df .'
 alias df='df -h'
 alias du.='du .'
 alias du='du -h'
+alias e=nvim
 alias free='free -h'
 alias la='ls -la'
 alias less='less -R'

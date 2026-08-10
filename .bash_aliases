@@ -24,6 +24,7 @@ alias ga='git add'
 alias gc='git commit'
 alias gd='git diff'
 alias gl='git log'
+alias gp='git push'
 alias gs='git status'
 
 temp() {

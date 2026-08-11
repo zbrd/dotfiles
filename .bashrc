@@ -10,26 +10,25 @@
 
 exec_prog() {
     local p=${1:?program arg}
-    command -v "$p" &> /dev/null && exec "$@" 1>&2 2>/dev/null
+    if command -v "$p" &> /dev/null; then
+        exec "$@" &> /dev/null
+    fi
 }
 
-if [ -n "$WAYLAND_DISPLAY" ] || [ -n "$DISPLAY" ]; then
-    # we're in a desktop terminal emulator
+if [ "$TERM" = kmscon ]; then
+    # we're in KMSCON
+
+    if ! [ "$TMUX" ]; then
+        # use a different server socket than normal tmux in wayland/x
+        exec tmux -L kmscon new-session -As "vt${XDG_VTNR}"
+    fi
+
+    # already in tmux
     # don't do anything
     return
 fi
 
-if [ -z "$XDG_VTNR" ]; then
-    # we're not in systemd
-    # don't do anything
-    return
-fi
-
-if [ -z "$KMS_START_SCRIPT" ]; then
-    # we're in normal linux virtual console
-    # try to start wayland
+if [ -z "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; then
+    # start wayland compositor
     exec_prog niri-session -l
 fi
-
-# start tmux for vt
-# exec tmux -L vt new-session -As "vt${XDG_VTNR}"

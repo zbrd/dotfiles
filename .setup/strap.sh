@@ -21,11 +21,13 @@ fi
 
 # Set console font
 FONT=${FONT:-ter-128b}
+echo "Setting console font '$FONT'"
 setfont -v "$FONT"
 
 # Connect to internet
 if [ -n "$WIFI" ]; then
     read -r wname wpass <<< "$WIFI"
+    echo "Connecting to WiFi '$wname'"
     iwctl station wlan0 connect "$wname" "${wpass:+-P $wpass}"
 else
     echo 'No wifi network name provided:'
@@ -37,14 +39,17 @@ fi
 # Mount EFI partition
 # NOTE: assuming EFI partition already exist.
 EFI_DISK=${EFI_DISK:-/dev/sda1}
+echo "Mounting EFI partition '$EFI_DISK'"
 mount -vm "$EFI_DISK" /mnt/efi
 
 # Create root partition
 # NOTE: will destroy existing parition
 # https://gist.github.com/mjkstra/96ce7a5689d753e7a6bdd92cdc169bae
 ROOT_DISK=${ROOT_DISK:-/dev/sda2}
+echo "Creating btrfs parition '$ROOT_DISK'"
 mkfs.btrfs -vL Arch "$ROOT_DISK"
 mount -v "$ROOT_DISK" /mnt
+echo "Creating btrfs subvolumes"
 btrfs -v subvolume create \
     /mnt/@ \
     /mnt/@home \
@@ -61,7 +66,9 @@ mount -vmo "$mntopts,subvol=@data" "$ROOT_DISK" /mnt/data
 mount -vmo "$mntopts,subvol=@var_log" "$ROOT_DISK" /mnt/var/log
 mount -vmo "$mntopts,subvol=@var_cache" "$ROOT_DISK" /mnt/var/cache
 mount -vmo "$mntopts,subvol=@swap" "$ROOT_DISK" /mnt/swap
+mount -vmo "$mntopts,subvolid=5,noauto" "$ROOT_DISK" /mnt/mnt/btroot
 SWAP_SIZE=${SWAP_SIZE:-16g}
+echo "Creating swapfile/subvolume ($SWAP_SIZE)"
 btrfs -v filesystem mkswapfile --size "$SWAP_SIZE" --uuid clear \
     /mnt/swap/swapfile
 swapon -v /mnt/swap/swapfile
@@ -97,6 +104,7 @@ PKGS=(
 )
 
 # Bootstrap
+echo 'Set up pacman mirrorlist'
 reflector \
     --latest 5 \
     --protocol https \
@@ -107,6 +115,7 @@ pacstrap -K /mnt "${PKGS[@]}"
 genfstab -U /mnt >> /mnt/etc/fstab
 
 # Copy scripts
+echo 'Copying scripts'
 cp -v "$(dirname "$0")"/scripts/* /mnt/root/
 
 echo

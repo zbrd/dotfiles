@@ -29,7 +29,7 @@ FSROOT=${FSROOT##/}
 FSROOT=${FSROOT%%/}
 
 # Where to mount btrfs root
-MOUNT_PATH=${MOUNT_PATH:-/mnt/broot}
+MOUNT_PATH=${MOUNT_PATH:-/mnt/btroot}
 MOUNT_PATH=${MOUNT_PATH##/}
 MOUNT_PATH=${MOUNT_PATH%%/}
 
@@ -43,7 +43,8 @@ SNAPSHOTS=${SNAPSHOTS%%/}
 : "${MOUNT_PATH:?Required config MOUNT_PATH not set}"
 
 sid=$(date -u +%Y%m%dT%H%M%S%Z)
-spath=/$MOUNT_PATH/$SNAPSHOTS/root_${sid}
+sdir=/$MOUNT_PATH/$SNAPSHOTS/root
+spath=$sdir/${sid}
 
 echo "[$0] Subvolume: /$MOUNT_PATH/$FSROOT"
 echo "[$0] Snapshot: $spath"
@@ -54,7 +55,8 @@ unmount() {
     fi
 }
 
-mount -vm -o subvolid=5 "$PART" "/$MOUNT_PATH"
+mount -vmo subvolid=5 "$PART" "/$MOUNT_PATH"
 trap unmount EXIT
 
+mkdir -vp "$sdir"
 btrfs -v subvolume snapshot -r "/$MOUNT_PATH/$FSROOT" "$spath"

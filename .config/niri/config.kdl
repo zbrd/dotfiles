@@ -62,14 +62,9 @@ layout {
     }
 
     struts {
-        bottom 14
+        bottom 22
     }
 }
-
-spawn-sh-at-startup "wpaperd -d"
-spawn-at-startup "lxqt-policykit-agent"
-spawn-at-startup "idler"
-spawn-at-startup "mainmux"
 
 hotkey-overlay {
     skip-at-startup
@@ -79,20 +74,6 @@ screenshot-path "~/Pictures/Screenshots/Screenshot_%Y-%m-%d_%H-%M-%S.png"
 
 animations {
     on
-}
-
-workspace "cmd" {
-    layout {
-        struts {
-            bottom 0
-        }
-    }
-}
-
-workspace "web" {
-    layout {
-        default-column-width { proportion 1.0; }
-    }
 }
 
 // Work around WezTerm's initial configure bug
@@ -105,32 +86,10 @@ window-rule {
     default-column-width {}
 }
 
-// Open Firefox in 'web' workspace
-window-rule {
-    // This app-id regular expression will work for both:
-    // - host Firefox (app-id is "firefox")
-    // - Flatpak Firefox (app-id is "org.mozilla.firefox")
-    match app-id=r#"firefox$"#
-    open-on-workspace "web"
-}
-
 // Open the Firefox picture-in-picture player as floating by default.
 window-rule {
     match app-id=r#"firefox$"# title="^Picture-in-Picture$"
     open-floating true
-}
-
-// Open foot terminal in 'cmd' workspace
-window-rule {
-    match app-id=r#"^foot"#
-    open-on-workspace "cmd"
-}
-
-// Special foot terminal id 'foot-main': open maximized
-// Exec foot with 'foot -a foot-main'
-window-rule {
-    match app-id=r#"^foot-main"#
-    open-maximized true
 }
 
 // Example: block out password manager from screen capture.
@@ -173,7 +132,7 @@ binds {
         spawn-sh "makoctl menu -- notmenu"
     }
 
-    Mod+Return hotkey-overlay-title="Open main tmux" { spawn "mainmux"; }
+    Mod+Return hotkey-overlay-title="Open terminal" { spawn "foot"; }
     Mod+T hotkey-overlay-title="Open terminal" { spawn "foot"; }
     Mod+R hotkey-overlay-title="Run menu" { spawn "fuzzel"; }
     Mod+B hotkey-overlay-title="Run firefox" { spawn "firefox"; }

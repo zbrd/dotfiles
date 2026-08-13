@@ -8,19 +8,12 @@
 [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
 [[ -f ~/.bash_prompt  ]] && . ~/.bash_prompt
 
-exec_prog() {
-    local p=${1:?program arg}
-    if command -v "$p" &> /dev/null; then
-        exec "$@" &> /dev/null
-    fi
-}
-
 if [ "$TERM" = kmscon ]; then
     # we're in KMSCON
 
     if ! [ "$TMUX" ]; then
         # use a different server socket than normal tmux in wayland/x
-        exec tmux -L kmscon new-session -As "vt${XDG_VTNR}"
+        exec tmux -L kmscon new-session -As "TTY${XDG_VTNR}"
     fi
 
     # already in tmux
@@ -28,7 +21,22 @@ if [ "$TERM" = kmscon ]; then
     return
 fi
 
-if [ -z "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; then
-    # start wayland compositor
-    exec_prog niri-session -l
+if [ -z "$WAYLAND_DISPLAY" ]; then
+    # we're in a normal getty terminal
+    # try to start a desktop environment
+
+    if desktop=~/.config/desktop/"tty${XDG_VTNR}" && [ -f "$desktop" ]; then
+        # helper func for desktop scripts
+        # execute command only if program exists
+        exec_prog() {
+            local p=${1:?program arg}
+            if command -v "$p" &> /dev/null; then
+                exec "$@" &> /dev/null
+            fi
+            return 1
+        }
+
+        # run desktop environment
+        . "$desktop"
+    fi
 fi

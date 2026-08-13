@@ -4,8 +4,8 @@
 [user]
     useConfigOnly = true
 
-[includeIf "gitdir:~/Repos/241m/"]
+[includeIf "gitdir:~/Projects/241m/"]
     path = ~/.config/git/241m.ini
 
-[includeIf "gitdir:~/Repos/zbrd/"]
+[includeIf "gitdir:~/Projects/zbrd/"]
     path = ~/.config/git/zbrd.ini

@@ -8,10 +8,10 @@
 [[ -f ~/.bash_aliases ]] && . ~/.bash_aliases
 [[ -f ~/.bash_prompt  ]] && . ~/.bash_prompt
 
-if [ "$TERM" = kmscon ]; then
+if [ "$TERM_SESSION_TYPE" = kms ]; then
     # we're in KMSCON
 
-    if ! [ "$TMUX" ]; then
+    if ! [ "$TMUX" ] && ! [ -f ~/.notmux ]; then
         # use a different server socket than normal tmux in wayland/x
         exec tmux -L kmscon new-session -As "TTY${XDG_VTNR}"
     fi

@@ -1,5 +1,5 @@
-alias ,='less -RF'
 alias ..='cd ..'
+alias L='less -RF'
 alias cl=clear
 alias clear='clear -x'
 alias cp='cp -vi'

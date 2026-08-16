@@ -16,19 +16,38 @@ alias ln='ln -vi'
 alias ls='ls -h --color=auto'
 alias mkdir='mkdir -v'
 alias mv='mv -vi'
-alias pacman='pacman --color=auto'
 alias psxf='ps xf'
+alias sudo='sudo '
 alias rm='rm -vi'
 alias tree='tree -C'
 alias vi=nvim
 alias vim=nvim
 
+# git
 alias ga='git add'
 alias gc='git commit'
 alias gd='git diff'
 alias gl='git log'
 alias gp='git push'
 alias gs='git status'
+
+# system
+alias sv='sudo sv '
+alias reboot='sudo reboot '
+alias poweroff='sudo poweroff '
+
+# xbps
+alias xbps-install='sudo xbps-install '
+alias xbps-remove='sudo xbps-remove '
+alias xbi='xbps-install '
+alias xbpi='xbps-install '
+alias xbq='xbps-query '
+alias xbpq='xbps-query '
+alias xbr='xbps-remove '
+alias xbpr='xbps-remove '
+
+# pacman
+alias pacman='pacman --color=auto'
 
 temp() {
     head -c2 /sys/class/thermal/thermal_zone12/temp
@@ -43,6 +62,10 @@ batt() {
 
 pacs() {
     command pacman --color=always -Ss "$1" | command less -RF
+}
+
+xbs() {
+    command xbps-query -Rs "$1" | command less -RF
 }
 
 man() {

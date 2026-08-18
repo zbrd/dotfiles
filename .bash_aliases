@@ -9,11 +9,12 @@ alias du.='du .'
 alias du='du -h'
 alias e=nvim
 alias free='free -h'
+alias l=ls
 alias la='ls -la'
 alias less='less -R'
 alias ll='ls -l'
 alias ln='ln -vi'
-alias ls='ls -h --color=auto'
+alias ls='ls -h --color=auto --group-directories-first'
 alias mkdir='mkdir -v'
 alias mv='mv -vi'
 alias psxf='ps xf'
